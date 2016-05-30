@@ -30,6 +30,7 @@ data = {'ticket':'comic1',
 		'object_id':titleId + '_' + no,
 		'lkey':lkey,
 		'page_size':page_size,
+		'page_no':459,
 		'sort':'newest'}
 data = urllib.urlencode(data)
 request = urllib2.Request(url, data)
@@ -42,6 +43,7 @@ import json
 json_acceptable_string = response.read().replace("'", "\"")
 d = json.loads(json_acceptable_string)
 
+# comment_list가 size가 0일때까지 page_no를 증가시키면 될듯
 for comment in d['comment_list'] :
 	print comment['registered_ymdt'] + " " + \
 	comment['enc_writer_id'] + " " + \
