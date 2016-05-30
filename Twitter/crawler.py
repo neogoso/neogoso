@@ -2,7 +2,14 @@
 
 import math
 import json
-import tweepy # from pypi
+import os
+import tweepy
+
+_path = os.path.abspath(__file__)
+_dir_path = os.path.dirname(_path)
+
+with open(os.path.join(_dir_path, 'appinfo.json')) as p:
+    _appinfo = json.loads(p.read())
 
 def print_unsafe(s):
     ''' Print s if UnicodeEncodeError is not raised
@@ -17,7 +24,7 @@ def print_unsafe(s):
 class TwitterCrawler(object):
     ''' A Twitter crawler '''
     def __init__(self, 
-                 appinfo = None,
+                 appinfo = _appinfo,
                  wait_ratelimit = False,
                  *args, **kwargs):
         ''' Class initialization '''
@@ -72,10 +79,7 @@ class TwitterCrawler(object):
 
 def test():
     ''' Test routine : Seo Ji-Su in Lovelyz '''
-    with open('appinfo.json', 'r') as p:
-        ai = json.loads(p.read())
-
-    tc = TwitterCrawler(appinfo = ai)
+    tc = TwitterCrawler()
     tc.authenticate()
 
     list_tweets = tc.search(
@@ -86,7 +90,7 @@ def test():
     for index, tweet in enumerate(list_tweets):
         print '[%04dth result]' % (index+1)
         print '<Info>', tweet.created_at, '| <Content>',
-        print_unsafe(tweet.text)
+        print_unsafe(tweet.text.replace('\n', '\\n'))
         print
 
 if __name__ == '__main__':
