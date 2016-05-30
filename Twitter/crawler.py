@@ -64,8 +64,6 @@ class TwitterCrawler(object):
         self.target = target
         self.date = date
 
-        # TODO : Filter the items in the specific range of date
-
         cursor = tweepy.Cursor(
             self.api.search,
             q = self.target,
