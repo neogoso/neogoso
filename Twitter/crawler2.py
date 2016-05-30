@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# inspired by https://github.com/Jefferson-Henrique/GetOldTweets-python
+# Inspired by https://github.com/Jefferson-Henrique/GetOldTweets-python
+# (Almost all codes are based on the module manager/TweetManager.py)
 
 # Unlike TwitterCrawler() in crawler.py, AdvTwitterCrawler() can find
 # the old tweets, even if they were written a few years ago.
