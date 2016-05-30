@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# XXX : This is based on the official Twitter API.
+#       The search API has a limitation that it can
+#       only search the recent tweets.
+
 import math
 import json
 import os
@@ -60,19 +64,13 @@ class TwitterCrawler(object):
         self.target = target
         self.date = date
 
-        '''
-        if maxnum <= rpp_max:
-            _rpp = maxnum
-        else:
-            _rpp = rpp_max
-        '''
-
         # TODO : Filter the items in the specific range of date
 
         cursor = tweepy.Cursor(
             self.api.search,
             q = self.target,
-            result_type = 'recent',
+            since = self.date[0],
+            until = self.date[1],
             show_user = True)
 
         return cursor.items(maxnum)
@@ -84,8 +82,8 @@ def test():
 
     list_tweets = tc.search(
         target = '서지수',
-        date = ((2015, 03, 01), (2016, 05, 30)),
-        maxnum = 30)
+        date = ('2016-05-01', '2016-05-25'),
+        maxnum = 100)
 
     for index, tweet in enumerate(list_tweets):
         print '[%04dth result]' % (index+1)
