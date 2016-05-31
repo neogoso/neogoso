@@ -3,6 +3,9 @@ import urllib
 import urllib2
 
 import sys
+import re
+import json, cjson, jsonlib
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -25,32 +28,32 @@ for line in response.read().splitlines() :
 print lkey
 print page_size
 
-url = 'http://comic.naver.com/comments/list_comment.nhn'
-data = {'ticket':'comic1',
-		'object_id':titleId + '_' + no,
-		'lkey':lkey,
-		'page_size':page_size,
-		'page_no':459,
-		'sort':'newest'}
-data = urllib.urlencode(data)
-request = urllib2.Request(url, data)
-request.add_header('Connection','keep-alive')
-request.add_header('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
-request.add_header('Referer',url1)
-response = urllib2.urlopen(request)
 
-import json
-json_acceptable_string = response.read().replace("'", "\"")
-d = json.loads(json_acceptable_string)
+for page_no in range(1, 460):
+	url = 'http://comic.naver.com/comments/list_comment.nhn'
+	data = {'ticket':'comic1',
+			'object_id':titleId + '_' + no,
+			'lkey':lkey,
+			'page_size':page_size,
+			'page_no':page_no,
+			'sort':'newest'}
+	data = urllib.urlencode(data)
+	request = urllib2.Request(url, data)
+	request.add_header('Connection','keep-alive')
+	request.add_header('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
+	request.add_header('Referer',url1)
+	response = urllib2.urlopen(request)
 
-# comment_list가 size가 0일때까지 page_no를 증가시키면 될듯
-for comment in d['comment_list'] :
-	print comment['registered_ymdt'] + " " + \
-	comment['enc_writer_id'] + " " + \
-	comment['writer_nickname'] + " " + \
-	comment['modified_ymdt'] + " " + \
-	comment['object_id'] + " " + \
-	comment['writer_id'] + " " + \
-	comment['contents'] + " " + \
-	str(comment['comment_no'])
+	json_acceptable_string = response.read().replace("'", "\"").replace('\\x', '\\u00') 
+	d = json.loads(json_acceptable_string)
 
+	# comment_list가 size가 0일때까지 page_no를 증가시키면 될듯
+	for comment in d['comment_list']:
+		print comment['registered_ymdt'] + " " + \
+		comment['enc_writer_id'] + " " + \
+		comment['writer_nickname'] + " " + \
+		comment['modified_ymdt'] + " " + \
+		comment['object_id'] + " " + \
+		comment['writer_id'] + " " + \
+		comment['contents'] + " " + \
+		str(comment['comment_no'])
