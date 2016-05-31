@@ -4,7 +4,7 @@ import urllib2
 
 import sys
 import re
-import json, cjson, jsonlib
+import json
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
