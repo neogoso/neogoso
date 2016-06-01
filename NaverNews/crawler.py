@@ -1,6 +1,9 @@
 #-*- coding: utf-8 -*-
 import urllib
 import urllib2
+from konlpy.tag import Kkma, Twitter
+from konlpy.utils import pprint
+import time
 
 import sys
 reload(sys)
@@ -52,8 +55,17 @@ column ='''commentNo
 		userIdNo
 		userName'''.replace('\t','').replace(' ','').split('\n')
 print column
-for comment in d['result']['commentList'] :
-	row = ''
-	for attribute in column :
-		row += str(comment[attribute]) + " "
-	print row
+
+t = time.time()
+twit = Twitter()
+
+for comment in d['result']['commentList']:
+	#row = ''
+	#for attribute in column :
+	#	row += str(comment[attribute]) + " "
+	#comment['contents']
+	twit.pos(comment['contents'])
+	#print type(twit.pos(comment['contents']))
+	
+
+print time.time() - t
