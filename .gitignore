@@ -1,2 +1,4 @@
 *.pyc
 Server/venv/*
+
+*.json
