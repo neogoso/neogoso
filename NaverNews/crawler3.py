@@ -14,7 +14,7 @@ class NaverNewsCrawler(object):
         pass
 
     def get_articles(self, 
-                     date = ('2015-06-01',
+                     date = ('2016-05-30',
                              '2016-05-31')):
         _headers = {
             'User-Agent' : 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; ko-KR))'
@@ -59,8 +59,6 @@ class NaverNewsCrawler(object):
                     'aid' : aid
                 })
 
-                print oid, aid, title
-
         print 'Extracting articles [memo...]'
 
         # memo
@@ -93,15 +91,15 @@ class NaverNewsCrawler(object):
                     'title' : title,
                     'oid' : oid, 'aid' : aid
                 })
-                
-                print oid, aid, title
+
+        print 'Total : %d articles' % len(list_articles)
 
         return list_articles
 
     def get_comments(self, oid, aid):
         print 'Current article : oid %s, aid %s' % (oid, aid)
 
-        total = 1000000
+        total = 5000
         pagesize = 20
         page = 39
 
@@ -176,6 +174,8 @@ class NaverNewsCrawler(object):
                     'userIdNo' : c['userIdNo'],
                     'userName' : c['userName']})
 
+            print '%d comments...' % len(list_comments)
+
             return list_comments
 
     def get_replies(self,
@@ -241,31 +241,34 @@ class NaverNewsCrawler(object):
                 'userIdNo' : c['userIdNo'],
                 'userName' : c['userName']})
 
+        print '... %d replies...' % len(list_replies)
+
         return list_replies
 
 if __name__ == '__main__':
     nnc = NaverNewsCrawler()
     list_articles = nnc.get_articles()
     
+    urlform = 'http://entertain.naver.com/read?oid=%s&aid=%s'
+
     result = []
 
     for article in list_articles:
-        r = {}
-
         title = article['title']
         oid = article['oid']
         aid = article['aid']
 
-        r['title'] = title
-        r['oid'] = oid
-        r['aid'] = aid
-
-        r['comments'] = []
-        r['replies'] = []
-
         # comments
         list_comments = nnc.get_comments(oid = oid, aid = aid)
-        r['comments'] += list_comments
+        
+        for c in list_comments:
+            d = c
+            d['title'] = title
+            d['oid'] = oid
+            d['aid'] = aid
+            d['url'] = urlform % (oid, aid)
+
+            result.append(d)
 
         # replies (= comment of comments)
         for c in list_comments:
@@ -273,8 +276,13 @@ if __name__ == '__main__':
                 parentCommentNo = c['parentCommentNo'],
                 oid = oid, aid = aid)
 
-            r['replies'] += list_replies
+            for e in list_replies:
+                d = e
+                d['title'] = title
+                d['oid'] = oid
+                d['aid'] = aid
+                d['url'] = urlform % (oid, aid)
 
-        result.append(r)
+                result.append(d)
 
     print result
