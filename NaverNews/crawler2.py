@@ -12,12 +12,13 @@ class NaverNewsCrawler(object):
     def __init__(self):
         pass
 
+    # 댓댓글
     def get_replies(self,
                     parentCommentNo, oid, aid, page):
         total = 1000000
         step = num_per_page
         cnt = 39
-         
+        
         urlform = '''https://apis.naver.com/commentBox/cbox/web_naver_list_jsonp.json?
         ticket=news&
         templateId=default_ent&
@@ -62,14 +63,17 @@ class NaverNewsCrawler(object):
         
         jsondata = json.loads(raw[10:-2])
         
-        print jsondata['result']
-        print '-------------------------------'
-        print jsondata['result']['parent']['contents']
-        print jsondata['result']['parent']['replyList']
+        replies = []
+
+        for replydata in jsondata['result']['commentList']:
+            replies.append(replydata['contents'])
+
+        return replies
  
 if __name__ == '__main__':
     nnc = NaverNewsCrawler()
-    nnc.get_replies(
+
+    print '\n'.join(nnc.get_replies(
         parentCommentNo = 615919102,
-        aid = '076', oid = '0002938677',
-        page = 2)
+        oid = '076', aid = '0002938677',
+        page = 1))
