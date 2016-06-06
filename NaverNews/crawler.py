@@ -76,7 +76,7 @@ def getComment(oid, aid):
 	return
 
 if __name__ == '__main__':
-	getComment('109', '0003328307')
+	getComment('076', '0002938677')
 	
 '''
 t = time.time()
