@@ -16,7 +16,7 @@ class NaverWebtoon(db.Model) :
 	object_id = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	writer_id = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	contents = db.Column(db.String(4096, collation = 'utf8mb4_unicode_ci'))
-	comment_no = db.Column(db.Integer);
+	comment_no = db.Column(db.Integer, primary_key = True);
 	def __init__ (self, registered_ymdt, enc_writer_id, writer_nickname, modified_ymdt,
 					object_id, writer_id, contents, comment_no) :
 		self.registered_ymdt = registered_ymdt
