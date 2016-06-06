@@ -8,7 +8,7 @@ import time
 import urllib, urllib2
 
 _title_id = 663887
-_sleep_range = [i*0.01 for i in xrange(1, 10+1)]
+_sleep_range = [i*0.001 for i in xrange(1, 10+1)]
 
 class NaverWebtoonCrawler(object):
     def __init__(self):
@@ -169,7 +169,5 @@ if __name__ == '__main__':
                     comment['contents'] + " " + \
                     str(comment['comment_no']))
 
-    with open('result.txt', 'r') as p:
-        p.write('\n'.join(result))
 
     print 'done!'
