@@ -139,7 +139,7 @@ class AdvTwitterCrawler(object):
                 results.append(tweet)
                 count += 1
 
-                print 'Status : Got %dth tweet...' % count
+                # print 'Status : Got %dth tweet...' % count
 
                 if count >= count_max:
                     #break
@@ -153,12 +153,12 @@ def test():
 
     list_tweets = tc.search(
         target = '서지수',
-        date = ('2015-05-01', '2015-05-10'),
-        maxnum = 100)
+        date = ('2014-05-01', '2015-05-10'),
+        maxnum = 1000)
 
     print '[Test for the target %s within the date %s - %s]'\
-            % ('서지수', '2015-05-01', '2015-05-10')
-    print '(Maximum number of tweets : %d)' % 100
+            % ('서지수', '2015-02-01', '2015-05-10')
+    print '(Maximum number of tweets : %d)' % 300
 
     for index, tweet in enumerate(list_tweets):
         print '[%05dth]' % (index+1)
