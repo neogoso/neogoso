@@ -68,6 +68,8 @@ class NaverNewsCrawler(object):
         for replydata in jsondata['result']['commentList']:
             replies.append(replydata['contents'])
 
+        print replydata.keys()
+
         return replies
  
 if __name__ == '__main__':

@@ -14,7 +14,8 @@ t = startdate
 while t < enddate:
 
 	t += datetime.timedelta(days=1)
-	date = "%s-%s-%s" % (str(t.year), ('0'+str(t.month))[-2:], ('0'+str(t.day))[-2:])
+	date = "%s-%s-%s" % (str(t.year),
+                      ('0'+str(t.month))[-2:], ('0'+str(t.day))[-2:])
 	print date
 	response = requests.get('http://entertain.naver.com/ranking/page.json?&type=default&date=%s' % date, headers=headers)
 	data = json.loads(response.text)

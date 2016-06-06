@@ -55,8 +55,10 @@ def getComment(oid, aid):
 		for i in d['result']['commentList']:
 			print i['contents']
 		total = d['result']['count']['comment']
-	
-		print d['result']['pageModel']
+
+        print '.....', d.keys()
+        print '.....', d['result'].keys()
+        print d['result']['pageModel']
 		
 
 	column ='''commentNo
