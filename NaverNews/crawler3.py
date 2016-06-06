@@ -174,8 +174,6 @@ class NaverNewsCrawler(object):
                     'userIdNo' : c['userIdNo'],
                     'userName' : c['userName']})
 
-            print '%d comments...' % len(list_comments)
-
             return list_comments
 
     def get_replies(self,
@@ -240,8 +238,6 @@ class NaverNewsCrawler(object):
                 'regTime' : c['regTime'],
                 'userIdNo' : c['userIdNo'],
                 'userName' : c['userName']})
-
-        print '... %d replies...' % len(list_replies)
 
         return list_replies
 
