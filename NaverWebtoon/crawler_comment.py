@@ -95,12 +95,8 @@ class NaverWebtoonCrawler(object):
             print 'page_no : %d' % page_no
             form['page_no'] = page_no
 
-            # sleep in random time
-            print 'Sleeping...'
-
             if page_no % 3 == 0:
-                time.sleep(
-                    random.choice(_sleep_range))
+				time.sleep(random.choice(_sleep_range))
 
             # get jsondata
             request = urllib2.Request(
@@ -131,6 +127,7 @@ class NaverWebtoonCrawler(object):
                 break
 
             page_no += 1
+
         return comment_list_total
 
 def test():
@@ -154,15 +151,15 @@ if __name__ == '__main__':
 
     nwc = NaverWebtoonCrawler()
     
-    for episode in xrange(2):
+    for episode in xrange(40, 49+1):
         print 'Episode : %d...........' % episode
-		f = open("comment%s.txt" % episode, "w")
-		for i, comment in enumerate(
-            nwc.get_commentdata(episode)):
-				f.write(' '.join(comment['comment_no'], comment['up_count'], comment['down_count']) + '\n')
+        f = open("comment%s.txt" % episode, "w")
 
-				'''
-				result.append(comment['registered_ymdt'] + " " + \
+        for i, comment in enumerate(
+            nwc.get_commentdata(episode)):
+
+            f.write(" ".join(map(str,[comment['comment_no'], comment['up_count'], comment['down_count']])) + '\n')
+            result.append(comment['registered_ymdt'] + " " + \
                     comment['enc_writer_id'] + " " + \
                     comment['writer_nickname'] + " " + \
                     comment['modified_ymdt'] + " " + \
@@ -170,6 +167,7 @@ if __name__ == '__main__':
                     comment['writer_id'] + " " + \
                     comment['contents'] + " " + \
                     str(comment['comment_no']))
-				'''
-		
+        f.close()
+
     print 'done!'
+
