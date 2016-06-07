@@ -131,7 +131,6 @@ class NaverWebtoonCrawler(object):
                 break
 
             page_no += 1
-
         return comment_list_total
 
 def test():
@@ -155,12 +154,15 @@ if __name__ == '__main__':
 
     nwc = NaverWebtoonCrawler()
     
-    for episode in xrange(1, 71+1):
+    for episode in xrange(51, 52):
         print 'Episode : %d...........' % episode
 
         for i, comment in enumerate(
             nwc.get_commentdata(episode)):
-            result.append(comment['registered_ymdt'] + " " + \
+				print comment['comment_no'], comment['up_count'], comment['down_count']
+
+				'''
+				result.append(comment['registered_ymdt'] + " " + \
                     comment['enc_writer_id'] + " " + \
                     comment['writer_nickname'] + " " + \
                     comment['modified_ymdt'] + " " + \
@@ -168,7 +170,6 @@ if __name__ == '__main__':
                     comment['writer_id'] + " " + \
                     comment['contents'] + " " + \
                     str(comment['comment_no']))
-
+				'''
 
     print 'done!'
-
