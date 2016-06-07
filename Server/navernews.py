@@ -21,8 +21,8 @@ class NaverNewsCrawler(object):
         pass
 
     def get_articles(self, 
-                     date = ('2015-06-01',
-                             '2016-06-01')):
+                     date = (sys.argv[1],
+                             sys.argv[2])):
         _headers = {
             'User-Agent' : 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; ko-KR))',
             'Host' : 'entertain.naver.com'
@@ -246,9 +246,9 @@ class NaverNewsCrawler(object):
                 'modTime' : c['modTime'],
                 'objectId' : c['objectId'],
                 'parentCommentNo' : c['parentCommentNo'],
-                'profileUserId' : c['profileUserId'],
+               # 'profileUserId' : c['profileUserId'],
                 'regTime' : c['regTime'],
-                'userIdNo' : c['userIdNo'],
+                #'userIdNo' : c['userIdNo'],
                 'userName' : c['userName']})
 
         return list_replies
@@ -259,8 +259,6 @@ if __name__ == '__main__':
     
     urlform = 'http://entertain.naver.com/read?oid=%s&aid=%s'
 
-    result = []
-
     for article in list_articles:
         title = article['title']
         oid = article['oid']
@@ -269,8 +267,7 @@ if __name__ == '__main__':
         # comments
         list_comments = nnc.get_comments(oid = oid, aid = aid)
         
-        for c in list_comments:
-            comment = c
+        for comment in list_comments:
             comment['title'] = title
             comment['oid'] = oid
             comment['aid'] = aid
@@ -283,9 +280,9 @@ if __name__ == '__main__':
                 comment['modTime'],
                 comment['objectId'],
                 comment['parentCommentNo'],
-                comment['profileUserId'],
+                #comment['profileUserId'],
                 comment['regTime'],
-                comment['userIdNo'],
+               # comment['userIdNo'],
                 comment['userName'],
                 comment['title'],
                 comment['oid'],
@@ -298,12 +295,11 @@ if __name__ == '__main__':
             except Exception : 
                 db.session.rollback()
 
-            result.append(comment)
 
         # replies (= comment of comments)
-        for c in list_comments:
+        for comment in list_comments:
             list_replies = nnc.get_replies(
-                parentCommentNo = c['parentCommentNo'],
+                parentCommentNo = comment['parentCommentNo'],
                 oid = oid, aid = aid)
 
             for e in list_replies:
@@ -319,9 +315,9 @@ if __name__ == '__main__':
                     comment['modTime'],
                     comment['objectId'],
                     comment['parentCommentNo'],
-                    comment['profileUserId'],
+                    #comment['profileUserId'],
                     comment['regTime'],
-                    comment['userIdNo'],
+                    #comment['userIdNo'],
                     comment['userName'],
                     comment['title'],
                     comment['oid'],
@@ -334,4 +330,3 @@ if __name__ == '__main__':
                 except Exception : 
                     db.session.rollback()
 
-                result.append(comment)

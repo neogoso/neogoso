@@ -42,31 +42,40 @@ class NaverNews(db.Model) :
 	modTime = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	objectId = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	parentCommentNo = db.Column(db.Integer)
-	profileUserId = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
+	#profileUserId = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	regTime = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
-	userIdNo = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
+	#userIdNo = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	userName = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	title = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'))
 	oid = db.Column(db.Integer)
 	aid = db.Column(db.Integer)
 	url = db.Column(db.String(2048, collation = 'utf8mb4_unicode_ci'))
-	__table_args__ = (UniqueConstraint('commentNo','modTime','objectId','parentCommentNo','userIdNo','regTime','oid','aid', name='navernews_unique'),)
+	__table_args__ = (UniqueConstraint('commentNo','modTime','objectId','parentCommentNo','regTime','oid','aid', name='navernews_unique'),)
 
-	def __init__(self,commentNo,contents,maskedUserId,modTime,objectId,parentCommentNo,profileUserId,regTime,userIdNo,userName,title,oid,aid,url) :
+	def __init__(self,commentNo,contents,maskedUserId,modTime,objectId,parentCommentNo,regTime,userName,title,oid,aid,url) :
 		self.commentNo = commentNo
 		self.contents = contents
 		self.maskedUserId = maskedUserId
 		self.modTime = modTime
 		self.objectId = objectId
 		self.parentCommentNo = parentCommentNo
-		self.profileUserId = profileUserId
+		#self.profileUserId = profileUserId
 		self.regTime = regTime
-		self.userIdNo = userIdNo
+		#self.userIdNo = userIdNo
 		self.userName = userName
 		self.title = title
 		self.oid = oid
 		self.aid = aid
 		self.url = url
+
+class Words(db.Model):
+	__tablename__ = 'words'
+	id = db.Column(db.Integer, primary_key = True)
+	word = db.Column(db.String(128, collation = 'utf8mb4_unicode_ci'), unique=True)
+	wordtype = db.Column(db.String(32,collation = 'utf8mb4_unicode_ci'))
+	def __init__(self, word, wordtype):
+		self.word = word
+		self.wordtype = wordtype
 
 class SlangWord(db.Model):
 	__tablename__ = 'slangword'
