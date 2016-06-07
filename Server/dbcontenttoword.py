@@ -15,7 +15,7 @@ import time
 start = 1
 term = 100
 
-wordtypes = ['Noun','Verb','Adjective','KoreanParticle']
+wordtypes = ['Noun','Verb','Adjective']
 
 words = {}
 for atype in wordtypes :

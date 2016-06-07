@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import app.core as core
+
+server = core.Init()
+db = server.db
+
+from model import *
+
 import sys
 import urllib, urllib2
 import datetime
@@ -15,9 +22,10 @@ class NaverNewsCrawler(object):
 
     def get_articles(self, 
                      date = ('2015-06-01',
-                             '2016-05-31')):
+                             '2016-06-01')):
         _headers = {
-            'User-Agent' : 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; ko-KR))'
+            'User-Agent' : 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; ko-KR))',
+            'Host' : 'entertain.naver.com'
         }
 
         startdate = datetime.date(
@@ -35,13 +43,11 @@ class NaverNewsCrawler(object):
         
         # ranking
         while t < enddate:
-            t += datetime.timedelta(days = 1)
 
             date_curr = '%s-%s-%s'\
                     % (str(t.year),
                        ('0'+str(t.month))[-2:],
                        ('0'+str(t.day))[-2:])
-
             response = requests.get(
                 'http://entertain.naver.com/ranking/page.json?&type=default&date=%s' % date_curr,
                 headers = _headers
@@ -53,22 +59,27 @@ class NaverNewsCrawler(object):
                 title = d['contentsArticle']['title']
                 oid = d['contentsArticle']['office']['id']
                 aid = d['contentsArticle']['articleId']
-
-                list_articles.append({
-                    'title' : title, 'oid' : oid,
-                    'aid' : aid
-                })
+                
+                if not (not oid or not aid) : 
+                    list_articles.append({
+                        'title' : title, 'oid' : oid,
+                        'aid' : aid
+                    })
+            t += datetime.timedelta(days = 1)
 
         print 'Extracting articles [memo...]'
+        
+        t = startdate
 
         # memo
-        for i in xrange(5):
-	    z = datetime.datetime.now() - datetime.timedelta(7 * i)
-	    
+        #for i in xrange(5):
+	    #z = datetime.datetime.now() - datetime.timedelta(7 * i)
+        while t < enddate:
             date_curr = "%s%s%s" % (
-                str(z.year),
-                ('0'+str(z.month))[-2:],
-                ('0'+str(z.day))[-2:])
+                str(t.year),
+                ('0'+str(t.month))[-2:],
+                ('0'+str(t.day))[-2:])
+
 
             response = requests.get(
                 'http://entertain.naver.com/ranking/memo?date=%s' % date_curr,
@@ -81,17 +92,18 @@ class NaverNewsCrawler(object):
                 'li', attrs = {'class':''}):
                 z = article.find(
                     'a', attrs = {'class':'tit'})
-                id_raw = z['href'][14].split('&')
+                id_raw = z['href'].split('?')[1].split('&')
                 
                 title = z.text
-                oid = id_raw[0][4:]
-                aid = id_raw[0][4:]
-
-                list_articles.append({
-                    'title' : title,
-                    'oid' : oid, 'aid' : aid
-                })
-
+                oid = id_raw[0].split('=')[1]
+                aid = id_raw[1].split('=')[1]
+                
+                if not (not oid or not aid) : 
+                    list_articles.append({
+                        'title' : title,
+                        'oid' : oid, 'aid' : aid
+                    })
+            t += datetime.timedelta(days = 1)
         print 'Total : %d articles' % len(list_articles)
 
         return list_articles
@@ -99,14 +111,14 @@ class NaverNewsCrawler(object):
     def get_comments(self, oid, aid):
         print 'Current article : oid %s, aid %s' % (oid, aid)
 
-        total = 5000
         pagesize = 20
-        page = 39
+        page = 0
 
-        while(pagesize * page < total):
+        #while(pagesize * page < total):
+        while True:
             page += 1
 
- 	    urlform = '''https://apis.naver.com/commentBox/cbox5/web_naver_list_jsonp.json?
+            urlform = '''https://apis.naver.com/commentBox/cbox5/web_naver_list_jsonp.json?
             ticket=news&
             templateId=default_ent&
             _callback=&
@@ -135,8 +147,9 @@ class NaverNewsCrawler(object):
                         'pageSize=20',
                         'pageSize=%d' % pagesize)\
                     .replace(
-                        'objectId=news109,0003328307',
-                        'objectId=news%s,%s' % (oid, aid))
+                        'objectId=news109' + '%2C' + '0003328307',
+                        'objectId=news%s' % oid + '%2C' + '%s' % aid)
+            
 
             request = urllib2.Request(url)
             request.add_header(
@@ -154,7 +167,7 @@ class NaverNewsCrawler(object):
                 raw[10:-2].replace('"', "\"")) 
 
             list_comments = []
-
+            
             try:
                 jsondata['result']['commentList']
             except KeyError:
@@ -200,8 +213,7 @@ class NaverNewsCrawler(object):
         url = urlform\
                 .replace(
                     'objectId=news076%%2C0002938677',
-                    'objectId=news%s%%2C%s'\
-                    % (set(oid), set(aid)))\
+                    'objectId=news%s' % oid + '%2C' + '%s' % aid)\
                 .replace(
                     'parentCommentNo=615919102',
                     'parentCommentNo=%d'\
@@ -258,13 +270,35 @@ if __name__ == '__main__':
         list_comments = nnc.get_comments(oid = oid, aid = aid)
         
         for c in list_comments:
-            d = c
-            d['title'] = title
-            d['oid'] = oid
-            d['aid'] = aid
-            d['url'] = urlform % (oid, aid)
+            comment = c
+            comment['title'] = title
+            comment['oid'] = oid
+            comment['aid'] = aid
+            comment['url'] = urlform % (oid, aid)
 
-            result.append(d)
+            dbcomment = NaverNews(
+                comment['commentNo'],
+                comment['contents'],
+                comment['maskedUserId'],
+                comment['modTime'],
+                comment['objectId'],
+                comment['parentCommentNo'],
+                comment['profileUserId'],
+                comment['regTime'],
+                comment['userIdNo'],
+                comment['userName'],
+                comment['title'],
+                comment['oid'],
+                comment['aid'],
+                comment['url'] 
+                )
+            try :
+                db.session.add(dbcomment)
+                db.session.commit()
+            except Exception : 
+                db.session.rollback()
+
+            result.append(comment)
 
         # replies (= comment of comments)
         for c in list_comments:
@@ -273,12 +307,31 @@ if __name__ == '__main__':
                 oid = oid, aid = aid)
 
             for e in list_replies:
-                d = e
-                d['title'] = title
-                d['oid'] = oid
-                d['aid'] = aid
-                d['url'] = urlform % (oid, aid)
+                comment = e
+                comment['title'] = title
+                comment['oid'] = oid
+                comment['aid'] = aid
+                comment['url'] = urlform % (oid, aid)
+                dbcomment = NaverNews(
+                    comment['commentNo'],
+                    comment['contents'],
+                    comment['maskedUserId'],
+                    comment['modTime'],
+                    comment['objectId'],
+                    comment['parentCommentNo'],
+                    comment['profileUserId'],
+                    comment['regTime'],
+                    comment['userIdNo'],
+                    comment['userName'],
+                    comment['title'],
+                    comment['oid'],
+                    comment['aid'],
+                    comment['url'] 
+                    )
+                try :
+                    db.session.add(dbcomment)
+                    db.session.commit()
+                except Exception : 
+                    db.session.rollback()
 
-                result.append(d)
-
-    print result
+                result.append(comment)

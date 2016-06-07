@@ -8,5 +8,7 @@ db = server.db
 
 from model import *
 
-db.drop_all()
+#db.drop_all()
+#db.create_all()
+
 db.create_all()
