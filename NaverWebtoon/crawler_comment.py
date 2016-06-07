@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     nwc = NaverWebtoonCrawler()
     
-    for episode in xrange(40, 49+1):
+    for episode in [18]:
         print 'Episode : %d...........' % episode
         f = open("comment%s.txt" % episode, "w")
 
